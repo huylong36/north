@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router';
 import { ProductScreen } from '../../pages/product';
 import { NewsScreen } from '../../pages/news';
@@ -20,6 +20,7 @@ import { Auth } from '../auth/auth';
 import { useState } from 'react';
 import { useAppSelector } from '../../redux/slices/hook';
 import { authState } from '../../redux/slices/authSlice';
+import Cookies from 'js-cookie';
 const pages = [
     {
         title: "Trang chủ",
@@ -43,6 +44,9 @@ export const LayoutHome = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(false);
+    const authReducer = useAppSelector(authState)
+
+
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -179,16 +183,26 @@ export const LayoutHome = () => {
                                     open={Boolean(anchorElUser)}
                                     onClose={handleCloseUserMenu}
                                 >
-                                    <MenuItem>
-                                        <Button onClick={handleLogin}>
-                                            Đăng nhập
-                                        </Button>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <Button>
-                                            Profile
-                                        </Button>
-                                    </MenuItem>
+                                    {authReducer.loading ? 'loading....' : ''}
+                                    {authReducer.userInfo
+                                        ?
+                                        <div>
+                                            <MenuItem>
+                                                <Button onClick={handleLogin}>
+                                                    Đăng xuất
+                                                </Button>
+                                            </MenuItem>
+                                        </div>
+                                        :
+                                        <div>
+                                            <MenuItem>
+                                                <Button onClick={handleLogin}>
+                                                    Tài khoản
+                                                </Button>
+                                            </MenuItem>
+                                        </div>
+
+                                    }
                                 </Menu>
                             </Box>
                         </Toolbar>

@@ -5,7 +5,7 @@ import { RootState } from "../store";
 import { useAppDispatch } from "./hook";
 import { useNavigate } from 'react-router';
 import Cookies from 'js-cookie';
-import useHistory from 'react-router-dom';
+
 export interface UserState {
     userInfo: UserInfo | null;
     loading: boolean;
@@ -21,13 +21,29 @@ export const authSlice = createSlice({
         loadUserInfo: (state, action: PayloadAction<UserInfo>) => {
             state.userInfo = action.payload;
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(requestRegister.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(requestRegister.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+            state.loading = false;
+            state.userInfo = action.payload;
+        })
+        builder.addCase(requestLogin.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(requestLogin.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+            state.loading = false;
+            state.userInfo = action.payload;
+        })
     }
 })
 
 
 export const requestRegister = createAsyncThunk('auth/register', async (props: { userInfo: UserInfo }) => {
     const res = await apiCreateUser(props);
-    Cookies.set('token', res.data.accessToken)
+    Cookies.set('token', res.data.accessToken);
     return res.data;
 })
 export const requestLogin = createAsyncThunk('auth/login', async (props: { userInfo: UserInfo }) => {
@@ -35,7 +51,7 @@ export const requestLogin = createAsyncThunk('auth/login', async (props: { userI
         const res = await apiLogin(props);
         return res.data
     } catch (error) {
-        console.log(error)
+        console.log(error.response.data.message);
     }
     return;
 })

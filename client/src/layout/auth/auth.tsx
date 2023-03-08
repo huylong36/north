@@ -1,24 +1,35 @@
 import { Button, Grid } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from 'react-hook-form';
 import { DialogComponent } from "../../component/DialogComponent";
 import { showErrForm } from "../../component/product/create";
 import { FCTextField } from "../../component/TextFieldComponent";
-import { authState, requestRegister, requestLogin } from "../../redux/slices/authSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/slices/hook";
-import { useSnackbar } from "notistack";
+import { requestLogin, requestRegister } from "../../redux/slices/authSlice";
+import { useAppDispatch } from "../../redux/slices/hook";
+import { useNavigate } from 'react-router-dom';
 import './style.scss';
 interface ICreateUser {
     open: boolean;
     onClose: () => void;
 }
 export const Auth = ({ open, onClose }: ICreateUser) => {
+
     const { enqueueSnackbar } = useSnackbar();
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [isChangeAuth, setChangeAuth] = useState(false)
     const dispatch = useAppDispatch();
+    const history = useNavigate();
+
+
     const hanldeLogin = (data: any) => {
-        dispatch(requestLogin(data))
+        try {
+            dispatch(requestLogin(data))
+            history('/')
+            onClose();
+        } catch (error) {
+            console.log(1111, error.message);
+        }
     }
     const hanldeRegister = (data: any) => {
         try {
@@ -26,7 +37,7 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
             dispatch(requestRegister(data));
             onClose();
         } catch (error) {
-
+            enqueueSnackbar("Đăng ký thất bại !", { variant: "error" })
         }
     }
     const changeAuth = () => {

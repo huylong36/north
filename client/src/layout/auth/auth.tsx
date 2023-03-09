@@ -3,7 +3,7 @@ import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from 'react-hook-form';
 import { DialogComponent } from "../../component/DialogComponent";
-import { showErrForm } from "../../component/product/create";
+import { showErrForm } from "../../screens/admin/product/create";
 import { FCTextField } from "../../component/TextFieldComponent";
 import { requestLogin, requestRegister } from "../../redux/slices/authSlice";
 import { useAppDispatch } from "../../redux/slices/hook";
@@ -25,7 +25,6 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
     const hanldeLogin = (data: any) => {
         try {
             dispatch(requestLogin(data))
-            history('/')
             onClose();
         } catch (error) {
             console.log(1111, error.message);
@@ -69,7 +68,7 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
                         <Button type="submit" variant="contained" color="success">Đăng nhập</Button>
                     </div>
                 </form>
-                <div>
+                <div className="change-auth">
                     Bạn chưa có tài khoản ? <Button onClick={changeAuth}>Đăng ký</Button>
                 </div>
             </>
@@ -117,7 +116,7 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
                         <Button type="submit" variant="contained" color="success">Đăng ký</Button>
                     </div>
                 </form>
-                <div>
+                <div className="change-auth">
                     Bạn đã có tài khoản ? <Button onClick={changeAuth}>Đăng Nhập</Button>
                 </div>
             </>
@@ -127,11 +126,11 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
 
         <DialogComponent
             open={open}
-            title={isChangeAuth ? "Đăng nhập" : "Đăng ký"}
+            title={isChangeAuth ? "Đăng ký" : "Đăng nhập"}
             size="sm"
             className="dialog-component"
             handleClose={() => onClose()}
-            content={isChangeAuth ? renderLogin() : renderRegister()}
+            content={isChangeAuth ? renderRegister() : renderLogin()}
         />
     )
 }

@@ -4,6 +4,7 @@ class UserInfo {
     password: string;
     phone: string;
     email: string;
+    userRole: number;
     constructor(args?: any) {
         if (!args) {
             args = {};
@@ -13,6 +14,7 @@ class UserInfo {
         this.password = args.password ?? "";
         this.phone = args.phone ?? "";
         this.email = args.email ?? "";
+        this.userRole = args.userRole ?? 1;
     }
 }
 export { UserInfo }

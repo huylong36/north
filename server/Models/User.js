@@ -15,6 +15,9 @@ const UserSchema = new Schema({
     },
     email: {
         type: String,
+    },
+    userRole: {
+        type: Number,
     }
 })
 module.exports = mongoose.model('users', UserSchema)

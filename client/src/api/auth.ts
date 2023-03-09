@@ -6,6 +6,6 @@ export const apiCreateUser = async (payload: { userInfo: UserInfo }) => {
 export const apiLogin = async (payload: { userInfo: UserInfo }) => {
     return ApiConfig('/login', payload);
 }
-export const apiGetUserFromToken = async (payload: string) => {
-    return ApiConfig('/get-user-from-token', payload);
+export const apiGetUserFromToken = async () => {
+    return ApiConfig('/get-user-from-token', {}, 'GET')
 }

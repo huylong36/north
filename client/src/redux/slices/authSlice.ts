@@ -37,6 +37,13 @@ export const authSlice = createSlice({
             state.loading = false;
             state.userInfo = action.payload;
         })
+        builder.addCase(requestGetUserFromToken.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(requestGetUserFromToken.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+            state.loading = false;
+            state.userInfo = action.payload;
+        })
     }
 })
 
@@ -49,16 +56,17 @@ export const requestRegister = createAsyncThunk('auth/register', async (props: {
 export const requestLogin = createAsyncThunk('auth/login', async (props: { userInfo: UserInfo }) => {
     try {
         const res = await apiLogin(props);
-        return res.data
+        Cookies.set('token', res.data.accessToken);
+        return res.data.user;
     } catch (error) {
         console.log(error.response.data.message);
     }
     return;
 })
-export const requestGetUserFromToken = createAsyncThunk('auth/getUserFromToken', async (props: string) => {
+export const requestGetUserFromToken = createAsyncThunk('auth/getUserFromToken', async () => {
     try {
-        const res = await apiGetUserFromToken(props);
-        return res.data.accessToken
+        const res = await apiGetUserFromToken();
+        return res.data.user;
     } catch (error) {
         console.log(error)
     }

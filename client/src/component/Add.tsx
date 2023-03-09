@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { CreateProduct } from "./product/create";
+// import { CreateProduct } from "../product/create";
 export const Add = () => {
     const [open, setOpen] = useState<boolean>(false);
 
@@ -10,6 +10,6 @@ export const Add = () => {
     }
     return <>
         <Button onClick={openCreateProduct}>ADD</Button>
-        <CreateProduct open={open} onClose={() => setOpen(!open)} />
+        {/* <CreateProduct open={open} onClose={() => setOpen(!open)} /> */}
     </>
 }

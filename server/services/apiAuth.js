@@ -3,9 +3,10 @@ const secret = 'mysecret';
 const User = require('../models/User')
 const argon2 = require('argon2')
 const register = async (req, res) => {
-    const { username, password, phone, email } = req.body
+    const { username, password, phone, email, userRole } = req.body
     try {
         const user = req.body
+        user.userRole = 1
         const data = await User.create(user)
         await data.save();
         const payload = { userId: data._id };

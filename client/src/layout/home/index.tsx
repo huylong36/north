@@ -1,26 +1,25 @@
+import MenuIcon from '@mui/icons-material/Menu';
+import { Avatar } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import React, { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router';
-import { ProductScreen } from '../../pages/product';
-import { NewsScreen } from '../../pages/news';
-import { HomeScreen } from '../../pages/home';
-import { Auth } from '../auth/auth';
-import { useState } from 'react';
-import { useAppSelector } from '../../redux/slices/hook';
-import { authState } from '../../redux/slices/authSlice';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useNavigate } from 'react-router';
+import { HomeScreen } from '../../pages/home';
+import { NewsScreen } from '../../pages/news';
+import { ProductScreen } from '../../pages/product';
+import { authState, requestGetUserFromToken } from '../../redux/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/slices/hook';
+import { Auth } from '../auth/auth';
+import './style.scss';
 const pages = [
     {
         title: "Trang chủ",
@@ -45,34 +44,33 @@ export const LayoutHome = () => {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(false);
     const authReducer = useAppSelector(authState)
-
-
-
+    const dispatch = useAppDispatch();
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
     };
     const history = useNavigate();
     const handleLogin = () => {
         setOpen(!open)
     }
+    const logout = () => {
+        Cookies.remove("token");
+        window.location.href = "/"
+    }
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
     const renderHeader = () => {
         return (
             <>
-                <AppBar position="static">
+                <AppBar position="static" className="appbar-header">
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
-                            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                             <Typography
                                 variant="h6"
                                 noWrap
@@ -128,25 +126,6 @@ export const LayoutHome = () => {
                                     ))}
                                 </Menu>
                             </Box>
-                            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                            <Typography
-                                variant="h5"
-                                noWrap
-                                component="a"
-                                href=""
-                                sx={{
-                                    mr: 2,
-                                    display: { xs: 'flex', md: 'none' },
-                                    flexGrow: 1,
-                                    fontFamily: 'monospace',
-                                    fontWeight: 700,
-                                    letterSpacing: '.3rem',
-                                    color: 'inherit',
-                                    textDecoration: 'none',
-                                }}
-                            >
-                                LOGO
-                            </Typography>
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page, key) => (
                                     <Button
@@ -160,51 +139,38 @@ export const LayoutHome = () => {
                                     </Button>
                                 ))}
                             </Box>
-
-                            <Box sx={{ flexGrow: 0 }}>
-                                <Tooltip title="Open settings">
-                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Menu
-                                    sx={{ mt: '45px' }}
-                                    id="menu-appbar"
-                                    anchorEl={anchorElUser}
-                                    anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    keepMounted
-                                    transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    open={Boolean(anchorElUser)}
-                                    onClose={handleCloseUserMenu}
-                                >
-                                    {authReducer.loading ? 'loading....' : ''}
-                                    {authReducer.userInfo
-                                        ?
-                                        <div>
-                                            <MenuItem>
-                                                <Button onClick={handleLogin}>
-                                                    Đăng xuất
-                                                </Button>
-                                            </MenuItem>
-                                        </div>
-                                        :
-                                        <div>
-                                            <MenuItem>
-                                                <Button onClick={handleLogin}>
-                                                    Tài khoản
-                                                </Button>
-                                            </MenuItem>
-                                        </div>
-
-                                    }
-                                </Menu>
-                            </Box>
+                            {authReducer.userInfo ?
+                                <Box sx={{ flexGrow: 0 }}>
+                                    <Tooltip title="Open settings">
+                                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Menu
+                                        sx={{ mt: '45px' }}
+                                        id="menu-appbar"
+                                        anchorEl={anchorElUser}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
+                                    >
+                                        <MenuItem onClick={logout}>
+                                            <Typography textAlign="center">Đăng xuất</Typography>
+                                        </MenuItem>
+                                    </Menu>
+                                </Box> :
+                                <Button onClick={handleLogin} className="btn-auth">
+                                    Đăng nhập
+                                </Button>
+                            }
                         </Toolbar>
                     </Container>
                 </AppBar>

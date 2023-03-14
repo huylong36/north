@@ -22,9 +22,9 @@ export const productSlice = createSlice({
         builder.addCase(requestCreateProduct.pending, (state) => {
             state.loading = true
         })
-        builder.addCase(requestCreateProduct.fulfilled, (state, action: PayloadAction<Product[]>) => {
+        builder.addCase(requestCreateProduct.fulfilled, (state, action: PayloadAction<Product>) => {
             state.loading = false;
-            state.products = action.payload;
+            state.products = [...state.products , action.payload];
         })
         builder.addCase(requestGetAllProduct.pending, (state) => {
             state.loading = true
@@ -37,6 +37,8 @@ export const productSlice = createSlice({
 })
 export const requestCreateProduct = createAsyncThunk('product/create', async (props: { product: Product, urlImage: string }) => {
     const res = await apiCreateProduct(props);
+    console.log({res});
+    
     return res.data.data;
 })
 export const requestGetAllProduct = createAsyncThunk('product/get-all-products', async (props: { skip: number, limit: number }) => {

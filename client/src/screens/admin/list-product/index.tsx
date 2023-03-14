@@ -8,15 +8,17 @@ import { ItemProduct } from "./ItemProduct";
 export const ListProduct = () => {
     const dispatch = useAppDispatch();
     const appSelector = useAppSelector(productState);
+    console.log('appSelector.products : ', appSelector.products);
+    
     useEffect(() => {
-        return () => {
-            dispatch(requestGetAllProduct({ skip: 0, limit: 10 }))
-        }
+        console.log('aasdasd');
+        
+        dispatch(requestGetAllProduct({ skip: 0, limit: 10 }))
     }, [])
     return <> {appSelector.products.length <= 0 ? "Không có sản phẩm nào" :
         <Grid container>
             {appSelector.products?.map((product: Product) => (
-                <ItemProduct key={product._id} item={product} />
+                <ItemProduct key={product?._id} item={product} />
             ))}
         </Grid>
     }

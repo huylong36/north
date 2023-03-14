@@ -5,7 +5,7 @@ const createProduct = async (req, res) => {
     try {
         const product = req.body
         const data = await Product.create(product)
-        await data.save();
+        // await data.save();
         res.json({
             success: true,
             message: "Tạo sản phẩm thành công !",
@@ -13,7 +13,7 @@ const createProduct = async (req, res) => {
         });
     } catch (error) {
         console.log(error)
-        res.json({ success: false, message: "Tạo sản phẩm thất bại !" });
+        throw new Error()
     }
 }
 const getAllProduct = async (req, res) => {

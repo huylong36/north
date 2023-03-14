@@ -101,7 +101,7 @@ export const LayoutAdmin = () => {
                     <Container maxWidth="xl">
                         <Routes>
                             <Route path='/category' element={CreateProduct()} />
-                            <Route path='/product' element={ListProduct()} />
+                            <Route path='/product' element={<ListProduct />} />
                         </Routes>
                     </Container>
                 </Grid>

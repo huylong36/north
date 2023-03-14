@@ -7,7 +7,7 @@ axiosInstance.defaults.baseURL = `${ENDPOINT_LOCAL}`;
 axiosInstance.defaults.withCredentials = true;
 axiosInstance.defaults.timeout = 20000;
 axiosInstance.defaults.headers = { "Content-Type": "application/json" };
-axiosInstance.defaults.headers = { "Access-Control-Allow-Origin": "http://localhost:3000" };
+axiosInstance.defaults.headers = { "Access-Control-Allow-Origin": "http://localhost:3003" };
 axiosInstance.defaults.headers = { "Access-Control-Allow-Credentials": "true" };
 axiosInstance.defaults.headers = Cookie.get("token") && { Authorization: `Bearer ${Cookie.get("token")}` };
 

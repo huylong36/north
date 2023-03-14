@@ -12,7 +12,6 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }} autoHideDuration={3000}>
         <Router>
@@ -20,7 +19,6 @@ root.render(
         </Router>
       </SnackbarProvider>
     </Provider>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

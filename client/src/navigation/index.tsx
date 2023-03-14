@@ -28,6 +28,6 @@ export const AppNavigation = () => {
         )
     }
     return <>
-        {authReducer.userInfo?.userRole == 0 ? renderHomeAdmin() : renderHome()}
+        {authReducer.userInfo?.userRole == 0 ? renderHomeAdmin() : (authReducer.loading ? <></> : renderHome())}
     </>
 }

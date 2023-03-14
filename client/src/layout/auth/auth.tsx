@@ -16,7 +16,7 @@ interface ICreateUser {
 export const Auth = ({ open, onClose }: ICreateUser) => {
 
     const { enqueueSnackbar } = useSnackbar();
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting }, } = useForm();
     const [isChangeAuth, setChangeAuth] = useState(false)
     const dispatch = useAppDispatch();
     const history = useNavigate();
@@ -65,7 +65,7 @@ export const Auth = ({ open, onClose }: ICreateUser) => {
                         </Grid>
                     </Grid>
                     <div className="btn-auth">
-                        <Button type="submit" variant="contained" color="success">Đăng nhập</Button>
+                        <Button type="submit" variant="contained" color="success"> {isSubmitting ? "loading..." : "Đăng nhập"}</Button>
                     </div>
                 </form>
                 <div className="change-auth">

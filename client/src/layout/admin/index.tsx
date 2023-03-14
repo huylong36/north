@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { useState } from "react";
 import { Route, Routes } from 'react-router';
 import { useNavigate } from "react-router-dom";
+import { ListProduct } from '../../screens/admin/list-product';
 import { CreateProduct } from '../../screens/admin/product/create';
 import './style.scss';
 interface Props {
@@ -23,8 +24,8 @@ const pages = [
                 router: '/category'
             },
             {
-                title: 'Khoá học',
-                router: '/course'
+                title: 'Sản phẩm',
+                router: '/product'
             },
             {
                 title: 'Sự kiện',
@@ -100,6 +101,7 @@ export const LayoutAdmin = () => {
                     <Container maxWidth="xl">
                         <Routes>
                             <Route path='/category' element={CreateProduct()} />
+                            <Route path='/product' element={ListProduct()} />
                         </Routes>
                     </Container>
                 </Grid>

@@ -16,4 +16,16 @@ const createProduct = async (req, res) => {
         res.json({ success: false, message: "Tạo sản phẩm thất bại !" });
     }
 }
-module.exports = { createProduct };
+const getAllProduct = async (req, res) => {
+    const { skip, limit } = req.query;
+    try {
+        const products = await Product.find().skip(skip ?? 0).limit(limit ?? 10)
+        const totalPages = Math.ceil(await Product.countDocuments() / 10);
+        res.json({ products, totalPages });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+
+    }
+}
+module.exports = { createProduct, getAllProduct };

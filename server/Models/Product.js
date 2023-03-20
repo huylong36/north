@@ -18,8 +18,11 @@ const ProductSchema = new Schema({
     description: {
         type: String,
     },
-    images: {
-        type: Array,
+    image: {
+        type: String,
+    },
+    imagesPreview: {
+        type: Array
     }
 })
 module.exports = mongoose.model('products', ProductSchema)

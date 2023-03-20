@@ -24,20 +24,17 @@ const register = async (req, res) => {
 }
 const login = async (req, res) => {
     const { username, password } = req.body
-    if (!username || !password) {
-        return res.status(400).json({ success: false, message: 'Missing username or password' })
-
-    }
     try {
         const user = await User.findOne({ username })
-        if (!user) {
-            return res.status(400).json({ success: false, message: 'Incorrect username or password' })
-        }
         const payload = { userId: user._id };
         const accessToken = jwt.sign(payload, secret);
         return res.status(200).json({ success: true, message: 'User logged in successfully', accessToken, user })
     } catch (error) {
-        console.log(error);
+        if (!password) {
+            throw new Error("Sai mật khẩu")
+        } else {
+            throw new Error("Đăng nhập thất bại")
+        }
     }
 }
 const getUserFromToken = async (req, res) => {
@@ -49,7 +46,7 @@ const getUserFromToken = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "access token succesfully", user })
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 }
 module.exports = { register, login, getUserFromToken };

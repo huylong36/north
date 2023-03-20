@@ -1,9 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Grid } from "@mui/material";
 import Axios from "axios";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { FCEditor } from "../../../component/CKEditorComponent";
 import { FCTextField } from "../../../component/TextFieldComponent";
 import { useAppDispatch } from "../../../redux/slices/hook";
 import { requestCreateProduct } from "../../../redux/slices/productSlice";
@@ -27,12 +29,24 @@ export const CreateProduct = () => {
         resolver: yupResolver(ProductSchema)
     });
     const dispatch = useAppDispatch();
+    const { enqueueSnackbar } = useSnackbar();
     const [image, setImage] = useState<string>();
+    const [imagesPreview, setImagesPreview] = useState([]);
+    const [description, setDescription] = useState('');
     const submitProduct = (data: any) => {
-        dispatch(requestCreateProduct({ ...data, image }))
+        try {
+            enqueueSnackbar("Tạo sản phẩm thành công !", {
+                variant: "success"
+            })
+            dispatch(requestCreateProduct({ ...data, image, imagesPreview, description }))
+
+        } catch (error) {
+            enqueueSnackbar("Tạo danh sách thất bại, vui lòng thử lại", {
+                variant: "error"
+            })
+        }
     }
     const onChangeImage = (files) => {
-        console.log('files', files);
         const formData = new FormData();
         formData.append("file", files[0]);
         formData.append("upload_preset", "m4jso0bw");
@@ -46,6 +60,24 @@ export const CreateProduct = () => {
             .catch((error) => { });
     };
 
+
+    const onChangListImage = (files) => {
+        const formData = new FormData();
+        for (let index = 0; index < files.length; index++) {
+            formData.append("file", files[index]);
+            formData.append("upload_preset", "m4jso0bw");
+        }
+        Axios.post(
+            "https://api.cloudinary.com/v1_1/dwn6likgj/image/upload",
+            formData
+        )
+            .then((res) => {
+                const newList = [...imagesPreview];
+                newList.push(res.data.url);
+                setImagesPreview(newList);
+            })
+            .catch((error) => { });
+    };
     return <>
         <form onSubmit={handleSubmit(submitProduct)}>
             <Grid container spacing={2} className="form-create-product">
@@ -61,7 +93,7 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Giá sản phẩm</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="price" register={register} size="small" placeholder="Giá sản phẩm" />
+                        <FCTextField name="price" register={register} size="small" type="number" placeholder="Giá sản phẩm" />
                         {errors.price && showErrForm(errors.price.message)}
                     </div>
                 </Grid>
@@ -77,33 +109,47 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Số thứ tự</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="stt" register={register} size="small" placeholder="Số thứ tự" />
+                        <FCTextField name="stt" register={register} size="small" type="number" placeholder="Số thứ tự" />
                         {errors.stt && showErrForm(errors.stt.message)}
-                    </div>
-                </Grid>
-                <Grid item sm={6}>
-                    <div style={{ margin: "0.7rem 0" }}>
-                        <span>Mô tả</span>
-                        <span className="text_error">*</span>
-                        <FCTextField name="description" register={register} size="small" placeholder="Mô tả" />
-                        {errors.description && showErrForm(errors.description.message)}
                     </div>
                 </Grid>
                 <Grid item sm={6}>
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Ảnh sản phẩm</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="images" type="file" register={register} size="small" placeholder="Mô tả"
+                        <FCTextField name="image" type="file" register={register} size="small"
                             onChange={(event) => {
                                 onChangeImage(event.target.files);
                             }}
 
                         />
-                        <div className="image-review">
+                        {image && <div className="image-review">
                             <img src={image} />
-                        </div>
+                        </div>}
+
                     </div>
                 </Grid>
+                <Grid item sm={6}>
+                    <div style={{ margin: "0.7rem 0" }}>
+                        <span>Ảnh preview</span>
+                        <span className="text_error">*</span>
+                        <FCTextField name="imagesPreview" type="file" register={register} size="small"
+                            onChange={(event) => {
+                                onChangListImage(event.target.files);
+                            }}
+
+                        />
+                        <div className="list-preview-image">
+                            {imagesPreview?.map((image: string) => (
+                                imagesPreview.length > 0 && <div className="image-review">
+                                    <img src={image} />
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+                </Grid>
+                <FCEditor handleChangeContent={(content: string) => setDescription(content)} defaultValue={''} height={300} />
             </Grid>
             <Button type="submit">Tạo</Button>
         </form>

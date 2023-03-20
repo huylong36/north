@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserInfo } from "../../../../models/user"
+import Cookies from 'js-cookie';
+import { UserInfo } from "../../../../models/user";
 import { apiCreateUser, apiGetUserFromToken, apiLogin } from "../../api/auth";
 import { RootState } from "../store";
-import { useAppDispatch } from "./hook";
-import { useNavigate } from 'react-router';
-import Cookies from 'js-cookie';
 
 export interface UserState {
     userInfo: UserInfo | null;
@@ -12,7 +10,7 @@ export interface UserState {
 }
 const initialState: UserState = {
     userInfo: null,
-    loading: false
+    loading: false,
 };
 export const authSlice = createSlice({
     name: "user",
@@ -37,6 +35,7 @@ export const authSlice = createSlice({
             state.loading = false;
             state.userInfo = action.payload;
         })
+
         builder.addCase(requestGetUserFromToken.pending, (state) => {
             state.loading = true
         })
@@ -57,11 +56,11 @@ export const requestLogin = createAsyncThunk('auth/login', async (props: { userI
     try {
         const res = await apiLogin(props);
         Cookies.set('token', res.data.accessToken);
-        return res.data.user;
+        return res.data.user
     } catch (error) {
-        console.log(error.response.data.message);
+        return null
     }
-    return;
+
 })
 export const requestGetUserFromToken = createAsyncThunk('auth/getUserFromToken', async () => {
     try {

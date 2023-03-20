@@ -5,7 +5,6 @@ const createProduct = async (req, res) => {
     try {
         const product = req.body
         const data = await Product.create(product)
-        // await data.save();
         res.json({
             success: true,
             message: "Tạo sản phẩm thành công !",
@@ -13,7 +12,7 @@ const createProduct = async (req, res) => {
         });
     } catch (error) {
         console.log(error)
-        throw new Error()
+        throw new Error('')
     }
 }
 const getAllProduct = async (req, res) => {
@@ -23,9 +22,21 @@ const getAllProduct = async (req, res) => {
         const totalPages = Math.ceil(await Product.countDocuments() / 10);
         res.json({ products, totalPages });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-
+        console.log(error)
+        throw new Error()
     }
 }
-module.exports = { createProduct, getAllProduct };
+
+const updateProduct = async (req, res) => {
+    const productId = { _id: req.params.id }
+    const update = await Product.findOneAndUpdate({ _id: productId }, { $set: { ...req.body } }, { new: true })
+    return res.json({
+        success: true,
+        message: "details product success",
+        update,
+    });
+
+}
+
+
+module.exports = { createProduct, getAllProduct, updateProduct };

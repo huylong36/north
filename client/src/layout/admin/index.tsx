@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { useState } from "react";
 import { Route, Routes } from 'react-router';
 import { useNavigate } from "react-router-dom";
+import { DetailItem } from '../../screens/admin/detail-item';
 import { ListProduct } from '../../screens/admin/list-product';
 import { CreateProduct } from '../../screens/admin/product/create';
 import './style.scss';
@@ -79,7 +80,7 @@ export const LayoutAdmin = () => {
                         <Collapse key={"index" + index} in={openIndexes.includes(index)}>
                             <div className="list-collapse-utilities">
                                 {item.content?.map((item) => (
-                                    <div className="item-collapse" onClick={() => history(item.router)}>
+                                    <div className="item-collapse" onClick={() => history(item.router, { replace: true })}>
                                         {item.title}
                                     </div>
                                 ))}
@@ -97,11 +98,12 @@ export const LayoutAdmin = () => {
                 <Grid item md={2} className="list-utilities">
                     <MyCollapse key={key} items={pages} />
                 </Grid>
-                <Grid item md={9}>
+                <Grid item md={10}>
                     <Container maxWidth="xl">
                         <Routes>
-                            <Route path='/category' element={CreateProduct()} />
-                            <Route path='/product' element={<ListProduct />} />
+                            <Route path='/category' element={<CreateProduct />} />
+                            <Route path='/product' element={<ListProduct />} key={document.location.href} />
+                            <Route path='/detail/:id' element={<DetailItem />} />
                         </Routes>
                     </Container>
                 </Grid>

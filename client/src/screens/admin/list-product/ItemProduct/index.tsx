@@ -1,10 +1,11 @@
-import { Grid } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Button, Grid } from "@material-ui/core";
+import { Link, useNavigate } from "react-router-dom";
 import { Product } from "../../../../../../models/product";
 import imageDefault from '../../../../assets/images/image-default.jpeg'
 import './style.scss'
 export const ItemProduct = (props: { item: Product }) => {
     const { item } = props;
+    const history = useNavigate();
     return (
         <>
             <Grid item md={3} className="item-product">
@@ -14,7 +15,9 @@ export const ItemProduct = (props: { item: Product }) => {
                     <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
                 </div>
                 <div>
-                    <Link to={`/detail/${item._id}`}>Edit</Link>
+                    <Button onClick={() =>
+                        history(`/category/${item._id}`)
+                    }>Sửa</Button>
                 </div>
             </Grid>
         </>

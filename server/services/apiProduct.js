@@ -27,6 +27,15 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+const getDetailById = async (req, res) => {
+    const productId = { _id: req.params.id }
+    const detail = await Product.findById(productId)
+    return res.json({
+        success: true,
+        message: "get detail successfully",
+        detail
+    });
+}
 const updateProduct = async (req, res) => {
     const productId = { _id: req.params.id }
     const update = await Product.findOneAndUpdate({ _id: productId }, { $set: { ...req.body } }, { new: true })
@@ -39,4 +48,4 @@ const updateProduct = async (req, res) => {
 }
 
 
-module.exports = { createProduct, getAllProduct, updateProduct };
+module.exports = { createProduct, getAllProduct, updateProduct, getDetailById };

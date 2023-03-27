@@ -1,14 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { TextField } from "@mui/material";
 import { Button, Grid } from "@mui/material";
+import { unwrapResult } from "@reduxjs/toolkit";
 import Axios from "axios";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import * as yup from "yup";
+import { Product } from "../../../../../models/product";
+import { apiUpdateProduct, getDetailProduct } from "../../../api/product";
 import { FCEditor } from "../../../component/CKEditorComponent";
 import { FCTextField } from "../../../component/TextFieldComponent";
 import { useAppDispatch } from "../../../redux/slices/hook";
-import { requestCreateProduct } from "../../../redux/slices/productSlice";
+import { requestCreateProduct, requestGetDetailProduct, requestUpdateProduct } from "../../../redux/slices/productSlice";
 import './style.scss';
 export const showErrForm = (data: any) => {
     return (
@@ -25,7 +30,7 @@ const ProductSchema = yup
     })
     .required();
 export const CreateProduct = () => {
-    const { handleSubmit, register, formState: { errors } } = useForm({
+    const { handleSubmit, register, setValue, formState: { errors } } = useForm({
         resolver: yupResolver(ProductSchema)
     });
     const dispatch = useAppDispatch();
@@ -33,19 +38,69 @@ export const CreateProduct = () => {
     const [image, setImage] = useState<string>();
     const [imagesPreview, setImagesPreview] = useState([]);
     const [description, setDescription] = useState('');
-    const submitProduct = (data: any) => {
+    const [item, setItem] = useState<Product>();
+
+
+
+    useEffect(() => {
+        const handleLoadDetail = async () => {
+            try {
+                if (id) {
+                    const res = await dispatch(
+                        requestGetDetailProduct({ id })
+                    )
+                    unwrapResult(res)
+                }
+            } catch (err) {
+                enqueueSnackbar("Không thể tải danh sách phòng ban", {
+                    variant: "error"
+                })
+            }
+        }
+        handleLoadDetail()
+    }, [])
+    const submitProduct = async (data: any) => {
+
+        const productInfo: Product = {
+            _id: data._id,
+            name: data.name,
+            price: data.price,
+            code: data.code,
+            stt: data.stt,
+            image: data.image,
+            imagesPreview: data.imagePreview,
+            description: description
+        }
+
         try {
-            enqueueSnackbar("Tạo sản phẩm thành công !", {
-                variant: "success"
-            })
-            dispatch(requestCreateProduct({ ...data, image, imagesPreview, description }))
+            if (!id) {
+                const actionResult = await dispatch(requestCreateProduct({
+                    product: productInfo
+                }))
+                unwrapResult(actionResult);
+                enqueueSnackbar("Tạo sản phẩm thành công !", {
+                    variant: "success"
+                })
+            } else {
+                const actionResult = await dispatch(requestUpdateProduct({
+                    id: id
+                }))
+                unwrapResult(actionResult);
+                enqueueSnackbar("Cập nhật sản phẩm thành công", { variant: "success" })
+            }
+
 
         } catch (error) {
             enqueueSnackbar("Tạo danh sách thất bại, vui lòng thử lại", {
                 variant: "error"
             })
         }
+
     }
+    const { id } = useParams<{ id: any }>();
+
+
+
     const onChangeImage = (files) => {
         const formData = new FormData();
         formData.append("file", files[0]);
@@ -85,7 +140,10 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Tên sản phẩm</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="name" register={register} size="small" placeholder="Tên" />
+                        <FCTextField defaultValue={id ? item?.name : ""}
+                            name="name" register={register}
+                            size="small" placeholder="Tên" />
+
                         {errors.name && showErrForm(errors.name.message)}
                     </div>
                 </Grid>
@@ -93,7 +151,9 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Giá sản phẩm</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="price" register={register} size="small" type="number" placeholder="Giá sản phẩm" />
+                        <FCTextField name="price" defaultValue={id ? item?.price : 0}
+                            register={register} size="small" type="number"
+                            placeholder="Giá sản phẩm" />
                         {errors.price && showErrForm(errors.price.message)}
                     </div>
                 </Grid>
@@ -101,7 +161,9 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Mã sản phẩm</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="code" register={register} size="small" placeholder="Mã sản phẩm" />
+                        <FCTextField name="code" defaultValue={id ? item?.code : ""} register={register} size="small" placeholder="Mã sản phẩm" inputProps={{
+                            step: "0.01"
+                        }} />
                         {errors.code && showErrForm(errors.code.message)}
                     </div>
                 </Grid>
@@ -109,7 +171,7 @@ export const CreateProduct = () => {
                     <div style={{ margin: "0.7rem 0" }}>
                         <span>Số thứ tự</span>
                         <span className="text_error">*</span>
-                        <FCTextField name="stt" register={register} size="small" type="number" placeholder="Số thứ tự" />
+                        <FCTextField name="stt" defaultValue={id ? item?.stt : 0} register={register} size="small" type="number" placeholder="Số thứ tự" />
                         {errors.stt && showErrForm(errors.stt.message)}
                     </div>
                 </Grid>
@@ -124,9 +186,8 @@ export const CreateProduct = () => {
 
                         />
                         {image && <div className="image-review">
-                            <img src={image} />
+                            <img src={id ? item?.image : ""} />
                         </div>}
-
                     </div>
                 </Grid>
                 <Grid item sm={6}>
@@ -149,9 +210,9 @@ export const CreateProduct = () => {
 
                     </div>
                 </Grid>
-                <FCEditor handleChangeContent={(content: string) => setDescription(content)} defaultValue={''} height={300} />
+                <FCEditor handleChangeContent={(content: string) => setDescription(content)} defaultValue={id ? item?.description : ""} height={300} />
             </Grid>
-            <Button type="submit">Tạo</Button>
+            <Button type="submit">{id ? "Sửa" : "Tạo"}</Button>
         </form>
     </>
 

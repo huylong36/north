@@ -8,7 +8,7 @@ export const FCTextField = (props: {
     register?: any,
     multiline?: boolean,
     rows?: number,
-    defaultValue?: string,
+    defaultValue?: any,
     disabled?: boolean,
     isError?: boolean,
     size?: string,

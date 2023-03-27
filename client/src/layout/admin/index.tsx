@@ -1,9 +1,11 @@
 import { Collapse, Container } from '@material-ui/core';
 import { Button, Grid } from "@mui/material";
 import Cookies from 'js-cookie';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from 'react-router';
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from '../../redux/slices/hook';
+import { requestGetAllProduct } from '../../redux/slices/productSlice';
 import { DetailItem } from '../../screens/admin/detail-item';
 import { ListProduct } from '../../screens/admin/list-product';
 import { CreateProduct } from '../../screens/admin/product/create';
@@ -54,6 +56,10 @@ export const LayoutAdmin = () => {
         Cookies.remove("token");
         window.location.href = "/"
     }
+    const dispatch = useAppDispatch();
+    // useEffect(() => {
+    //     dispatch(requestGetAllProduct({ skip: 0, limit: 10 }))
+    // }, [])
     const history = useNavigate();
     const [openIndexes, setOpenIndexes] = useState<number[]>([]);
     const key = Math.floor(Math.random() * 100);
@@ -103,7 +109,7 @@ export const LayoutAdmin = () => {
                         <Routes>
                             <Route path='/category' element={<CreateProduct />} />
                             <Route path='/product' element={<ListProduct />} key={document.location.href} />
-                            <Route path='/detail/:id' element={<DetailItem />} />
+                            <Route path='/category/:id' element={<CreateProduct />} />
                         </Routes>
                     </Container>
                 </Grid>

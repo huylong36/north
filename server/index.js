@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const authRouter = require('./routers/auth');
 const productRouter = require('./routers/products');
+const categoryRouter = require('./routers/category');
 require('dotenv').config();
 
 const URL = 'mongodb+srv://huylong:Dohuylong2000@cluster0.oakvtzn.mongodb.net/?retryWrites=true&w=majority'
@@ -37,5 +38,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.json())
 app.use('/', authRouter)
 app.use('/', productRouter)
+app.use('/', categoryRouter)
 const PORT = process.env.port || 5000
 app.listen(PORT, () => console.log(`Sever started on PORT ${PORT}`));

@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from '../../redux/slices/hook';
 import { requestGetAllProduct } from '../../redux/slices/productSlice';
-import { DetailItem } from '../../screens/admin/detail-item';
+import { CategoryPanel } from '../../screens/admin/category';
 import { ListProduct } from '../../screens/admin/list-product';
 import { CreateProduct } from '../../screens/admin/product/create';
 import './style.scss';
@@ -23,12 +23,16 @@ const pages = [
         title: "Nội dung",
         content: [
             {
-                title: 'Tạo danh mục',
+                title: 'Danh mục',
                 router: '/category'
             },
             {
-                title: 'Sản phẩm',
+                title: 'Tạo Sản phẩm',
                 router: '/product'
+            },
+            {
+                title: 'Danh sách sản phẩm',
+                router: '/list-product'
             },
             {
                 title: 'Sự kiện',
@@ -107,9 +111,10 @@ export const LayoutAdmin = () => {
                 <Grid item md={10}>
                     <Container maxWidth="xl">
                         <Routes>
-                            <Route path='/category' element={<CreateProduct />} />
-                            <Route path='/product' element={<ListProduct />} key={document.location.href} />
-                            <Route path='/category/:id' element={<CreateProduct />} />
+                            <Route path='/category' element={<CategoryPanel />} />
+                            <Route path='/product' element={<CreateProduct />} />
+                            <Route path='/list-product' element={<ListProduct />} key={document.location.href} />
+                            <Route path='/product/:id' element={<CreateProduct />} />
                         </Routes>
                     </Container>
                 </Grid>

@@ -1,7 +1,7 @@
 const Product = require("../Models/Product");
 
 const createProduct = async (req, res) => {
-    const { name, price, code, stt, description } = req.body
+    const { name, price, code, image, stt, description } = req.body
     try {
         const product = req.body
         const data = await Product.create(product)
@@ -37,15 +37,24 @@ const getDetailById = async (req, res) => {
     });
 }
 const updateProduct = async (req, res) => {
-    const productId = { _id: req.params.id }
-    const update = await Product.findOneAndUpdate({ _id: productId }, { $set: { ...req.body } }, { new: true })
+    const productUpdate = req.body
+    const update = await Product.findOneAndUpdate({ _id: productUpdate._id }, productUpdate, { new: true })
     return res.json({
         success: true,
-        message: "details product success",
+        message: "update product success",
         update,
+    });
+}
+const deleteProduct = async (req, res) => {
+    const deleteProduct = req.body
+    const deleteItem = await Product.findOneAndDelete({ _id: deleteProduct._id }, deleteProduct, { new: true })
+    return res.json({
+        success: true,
+        message: "delete product success",
+        deleteItem,
     });
 
 }
 
 
-module.exports = { createProduct, getAllProduct, updateProduct, getDetailById };
+module.exports = { createProduct, getAllProduct, updateProduct, getDetailById, deleteProduct };

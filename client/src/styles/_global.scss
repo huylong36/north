@@ -19,3 +19,12 @@ body {
     display: inline !important;
   }
 }
+@mixin ellipsis-text($line) {
+  &.dot-#{$line} {
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line !important;
+  }
+}

@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField } from "@mui/material";
 import { Button, Grid } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Axios from "axios";
@@ -9,11 +8,10 @@ import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import * as yup from "yup";
 import { Product } from "../../../../../models/product";
-import { apiUpdateProduct, getDetailProduct } from "../../../api/product";
 import { FCEditor } from "../../../component/CKEditorComponent";
 import { FCTextField } from "../../../component/TextFieldComponent";
-import { useAppDispatch } from "../../../redux/slices/hook";
-import { requestCreateProduct, requestGetDetailProduct, requestUpdateProduct } from "../../../redux/slices/productSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/slices/hook";
+import { productState, requestCreateProduct, requestGetDetailProduct, requestUpdateProduct } from "../../../redux/slices/productSlice";
 import './style.scss';
 export const showErrForm = (data: any) => {
     return (
@@ -30,7 +28,7 @@ const ProductSchema = yup
     })
     .required();
 export const CreateProduct = () => {
-    const { handleSubmit, register, setValue, formState: { errors } } = useForm({
+    const { handleSubmit, register, setValue, reset, formState: { errors } } = useForm({
         resolver: yupResolver(ProductSchema)
     });
     const dispatch = useAppDispatch();
@@ -38,9 +36,18 @@ export const CreateProduct = () => {
     const [image, setImage] = useState<string>();
     const [imagesPreview, setImagesPreview] = useState([]);
     const [description, setDescription] = useState('');
-    const [item, setItem] = useState<Product>();
 
+    const productSelector = useAppSelector(productState);
 
+    const item = productSelector.productInfo;
+    useEffect(() => {
+        setValue("name", item?.name);
+        setValue("price", item?.price);
+        setValue("code", item?.code);
+        setValue("stt", item?.stt);
+        setValue("image", item?.image);
+        setValue("imagesPreview", item?.imagesPreview);
+    }, [item])
 
     useEffect(() => {
         const handleLoadDetail = async () => {
@@ -52,7 +59,7 @@ export const CreateProduct = () => {
                     unwrapResult(res)
                 }
             } catch (err) {
-                enqueueSnackbar("Không thể tải danh sách phòng ban", {
+                enqueueSnackbar("Không thể tải danh sách sản phẩm", {
                     variant: "error"
                 })
             }
@@ -60,36 +67,29 @@ export const CreateProduct = () => {
         handleLoadDetail()
     }, [])
     const submitProduct = async (data: any) => {
-
         const productInfo: Product = {
             _id: data._id,
             name: data.name,
             price: data.price,
             code: data.code,
             stt: data.stt,
-            image: data.image,
-            imagesPreview: data.imagePreview,
+            image: image,
+            imagesPreview: imagesPreview,
             description: description
         }
-
         try {
             if (!id) {
-                const actionResult = await dispatch(requestCreateProduct({
-                    product: productInfo
-                }))
+                const actionResult = await dispatch(requestCreateProduct(productInfo))
                 unwrapResult(actionResult);
                 enqueueSnackbar("Tạo sản phẩm thành công !", {
                     variant: "success"
                 })
+                reset();
             } else {
-                const actionResult = await dispatch(requestUpdateProduct({
-                    id: id
-                }))
+                const actionResult = await dispatch(requestUpdateProduct(productInfo))
                 unwrapResult(actionResult);
                 enqueueSnackbar("Cập nhật sản phẩm thành công", { variant: "success" })
             }
-
-
         } catch (error) {
             enqueueSnackbar("Tạo danh sách thất bại, vui lòng thử lại", {
                 variant: "error"
@@ -110,6 +110,7 @@ export const CreateProduct = () => {
             formData
         )
             .then((res) => {
+                console.log(res);
                 setImage(res.data.url);
             })
             .catch((error) => { });
@@ -185,8 +186,8 @@ export const CreateProduct = () => {
                             }}
 
                         />
-                        {image && <div className="image-review">
-                            <img src={id ? item?.image : ""} />
+                        {item && <div className="image-review">
+                            <img src={id ? item?.image : ''} />
                         </div>}
                     </div>
                 </Grid>
@@ -200,10 +201,11 @@ export const CreateProduct = () => {
                             }}
 
                         />
+
                         <div className="list-preview-image">
-                            {imagesPreview?.map((image: string) => (
-                                imagesPreview.length > 0 && <div className="image-review">
-                                    <img src={image} />
+                            {item?.imagesPreview?.map((imagePreview: string) => (
+                                <div className="image-review" >
+                                    <img src={id ? imagePreview : ""} />
                                 </div>
                             ))}
                         </div>

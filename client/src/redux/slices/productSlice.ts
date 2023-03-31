@@ -1,15 +1,17 @@
 import { createAsyncThunk, createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 import { Product } from '../../../../models/product'
-import { apiCreateProduct, apiGetAllProduct, apiUpdateProduct, getDetailProduct } from '../../api/product';
+import { apiCreateProduct, apiDeleteProduct, apiGetAllProduct, apiUpdateProduct, getDetailProduct } from '../../api/product';
 import { RootState } from '../store';
 import _ from "lodash";
 export interface ProductState {
     products: Product[] | null;
     loading: boolean;
+    productInfo: Product | null;
 }
 const initialState: ProductState = {
     products: [],
-    loading: false
+    loading: false,
+    productInfo: null
 };
 export const productSlice = createSlice({
     name: "product",
@@ -20,38 +22,39 @@ export const productSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(requestCreateProduct.pending, (state) => {
-            state.loading = true
+        const actionList = [requestCreateProduct, requestGetAllProduct, requestGetDetailProduct, requestUpdateProduct, requestDeleteProduct]
+        actionList.forEach((action) => {
+            builder.addCase(action.pending, (state) => {
+                state.loading = true;
+            })
         })
+
         builder.addCase(requestCreateProduct.fulfilled, (state, action: PayloadAction<Product>) => {
             state.products = state.products.concat(action.payload)
             state.loading = false;
-        })
-        builder.addCase(requestGetAllProduct.pending, (state) => {
-            state.loading = true
         })
         builder.addCase(requestGetAllProduct.fulfilled, (state, action: PayloadAction<Product[]>) => {
             state.loading = false;
             state.products = action.payload
         })
-        builder.addCase(requestGetDetailProduct.pending, (state) => {
-            state.loading = true
-        })
 
         builder.addCase(requestGetDetailProduct.fulfilled, (state, action: PayloadAction<Product>) => {
-
-        })
-        builder.addCase(requestUpdateProduct.pending, (state) => {
-            state.loading = true
+            state.loading = false;
+            state.productInfo = action.payload;
         })
         builder.addCase(requestUpdateProduct.fulfilled, (state, action: PayloadAction<Product>) => {
             const index = _.findIndex(state.products, { _id: action.payload._id });
             state.products.splice(index, 1, action.payload);
             state.loading = false;
         })
+        builder.addCase(requestDeleteProduct.fulfilled, (state, action: PayloadAction<Product>) => {
+            state.loading = false;
+            state.productInfo = action.payload;
+        })
+
     }
 })
-export const requestCreateProduct = createAsyncThunk('product/create', async (props: { product: Product }) => {
+export const requestCreateProduct = createAsyncThunk('product/create', async (props: Product) => {
     const res = await apiCreateProduct(props);
 
     return res.data.data;
@@ -64,9 +67,13 @@ export const requestGetDetailProduct = createAsyncThunk('product/get-detail-prod
     const res = await getDetailProduct(props);
     return res.data.detail;
 })
-export const requestUpdateProduct = createAsyncThunk('product/update-product', async (props: { id: string }) => {
+export const requestUpdateProduct = createAsyncThunk('product/update-product', async (props: Product) => {
     const res = await apiUpdateProduct(props);
     return res.data.update;
+})
+export const requestDeleteProduct = createAsyncThunk('product/delete-product', async (props: Product) => {
+    const res = await apiDeleteProduct(props);
+    return res.data.deleteItem;
 })
 export const productState = (state: RootState) => state.product
 export default productSlice.reducer;

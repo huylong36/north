@@ -13,13 +13,13 @@ const register = async (req, res) => {
         const accessToken = jwt.sign(payload, secret);
         res.json({
             success: true,
-            message: "Tạo tài khoản thành công !",
+            message: "Create account successfully !",
             data,
             accessToken
         });
     } catch (error) {
         console.log(error)
-        res.json({ success: false, message: "Tạo tài khoản thất bại !" });
+        res.json({ success: false, message: "Create account failed !" });
     }
 }
 const login = async (req, res) => {
@@ -28,12 +28,12 @@ const login = async (req, res) => {
         const user = await User.findOne({ username })
         const payload = { userId: user._id };
         const accessToken = jwt.sign(payload, secret);
-        return res.status(200).json({ success: true, message: 'User logged in successfully', accessToken, user })
+        return res.status(200).json({ success: true, message: 'Login successfully !', accessToken, user })
     } catch (error) {
         if (!password) {
-            throw new Error("Sai mật khẩu")
+            throw new Error("Wrong password")
         } else {
-            throw new Error("Đăng nhập thất bại")
+            throw new Error("Login failed")
         }
     }
 }
@@ -44,7 +44,7 @@ const getUserFromToken = async (req, res) => {
         const decoded = jwt.verify(token, secret)
         const user = await User.findOne({ _id: decoded.userId })
 
-        return res.status(200).json({ success: true, message: "access token succesfully", user })
+        return res.status(200).json({ success: true, message: "successful token access !", user })
     } catch (error) {
         console.log(error)
     }

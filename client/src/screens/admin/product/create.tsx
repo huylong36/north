@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Grid } from "@mui/material";
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Axios from "axios";
 import { useSnackbar } from "notistack";
@@ -10,6 +10,7 @@ import * as yup from "yup";
 import { Product } from "../../../../../models/product";
 import { FCEditor } from "../../../component/CKEditorComponent";
 import { FCTextField } from "../../../component/TextFieldComponent";
+import { categoryState, requestLoadCategory } from "../../../redux/slices/categorySlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/slices/hook";
 import { productState, requestCreateProduct, requestGetDetailProduct, requestUpdateProduct } from "../../../redux/slices/productSlice";
 import './style.scss';
@@ -36,9 +37,12 @@ export const CreateProduct = () => {
     const [image, setImage] = useState<string>();
     const [imagesPreview, setImagesPreview] = useState([]);
     const [description, setDescription] = useState('');
-
+    const [subbject, setSubject] = useState('');
     const productSelector = useAppSelector(productState);
-
+    const categorySelector = useAppSelector(categoryState);
+    useEffect(() => {
+        dispatch(requestLoadCategory())
+    }, [])
     const item = productSelector.productInfo;
     useEffect(() => {
         setValue("name", item?.name);
@@ -66,6 +70,9 @@ export const CreateProduct = () => {
         }
         handleLoadDetail()
     }, [])
+    const handleChangeSubject = (event) => {
+        setSubject(event.target.value)
+    }
     const submitProduct = async (data: any) => {
         const productInfo: Product = {
             _id: data._id,
@@ -75,7 +82,8 @@ export const CreateProduct = () => {
             stt: data.stt,
             image: image,
             imagesPreview: imagesPreview,
-            description: description
+            description: description,
+            category: subbject
         }
         try {
             if (!id) {
@@ -211,6 +219,24 @@ export const CreateProduct = () => {
                         </div>
 
                     </div>
+                </Grid>
+                <Grid item sm={6}>
+                    <FormControl style={{ marginTop: "30px", width: "100%" }}>
+                        <InputLabel htmlFor="demo-simple-select-label" className="custom-select-label"> Danh mục</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={subbject}
+                            onChange={handleChangeSubject}
+                            defaultValue="Choose subject"
+                            variant="outlined"
+                            label="outlined"
+                        >
+                            {categorySelector?.categories?.map((item) => (
+                                <MenuItem key={item._id} value={item._id}>{item?.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
                 <FCEditor handleChangeContent={(content: string) => setDescription(content)} defaultValue={id ? item?.description : ""} height={300} />
             </Grid>

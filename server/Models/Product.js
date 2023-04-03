@@ -23,9 +23,6 @@ const ProductSchema = new Schema({
     imagesPreview: {
         type: Array,
     },
-    type: {
-        type: Number,
-    },
     category: {
         type: Schema.Types.ObjectId,
         ref: "Category",

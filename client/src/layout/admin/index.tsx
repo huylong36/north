@@ -1,11 +1,10 @@
 import { Collapse, Container } from '@material-ui/core';
 import { Button, Grid } from "@mui/material";
 import Cookies from 'js-cookie';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Route, Routes } from 'react-router';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from '../../redux/slices/hook';
-import { requestGetAllProduct } from '../../redux/slices/productSlice';
 import { CategoryPanel } from '../../screens/admin/category';
 import { ListProduct } from '../../screens/admin/list-product';
 import { CreateProduct } from '../../screens/admin/product/create';

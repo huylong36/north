@@ -7,7 +7,7 @@ const createProduct = async (req, res) => {
         const data = await Product.create(product)
         res.json({
             success: true,
-            message: "Tạo sản phẩm thành công !",
+            message: "Create Product successfully !",
             data,
         });
     } catch (error) {

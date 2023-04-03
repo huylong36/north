@@ -44,7 +44,7 @@ export const CategoryPanel = () => {
     }, [])
     const submitCategory = async (data: any) => {
         const categoryInfo: any = {
-            _id: item._id,
+            _id: item?._id,
             name: data.name,
             status: data.status
         }

@@ -15,7 +15,7 @@ const createCategory = async (req, res) => {
         data.status = 0;
         res.json({
             success: true,
-            message: "Tạo danh mục thành công !",
+            message: "Create category successfully !",
             data,
         });
     } catch (error) {
